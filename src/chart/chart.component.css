@@ -34,7 +34,7 @@ canvas {
   padding: 0.5rem;
   border-radius: 5px;
   border: 1px solid #dfe6eb;
-  box-shadow: 1px 1px 1px rgba(0, 0, 0, .05);
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05);
   background: #fff;
   color: #000;
   overflow: hidden;
@@ -46,7 +46,7 @@ canvas {
 
 .tooltip-title {
   text-align: center;
-  margin-bottom: .5rem;
+  margin-bottom: 0.5rem;
   white-space: nowrap;
 }
 
@@ -54,7 +54,6 @@ canvas {
   display: flex;
   flex-wrap: wrap;
 }
-
 
 .tooltip-list-item {
   display: flex;
@@ -64,14 +63,13 @@ canvas {
 }
 
 .name {
-  font-size: .8rem;
+  font-size: 0.8rem;
 }
 
 .value {
   font-size: 1rem;
   font-weight: bold;
 }
-
 
 .chart-slider {
   position: relative;
@@ -80,18 +78,18 @@ canvas {
 }
 
 .chart-slider__left {
-  transition: background .22s ease-in-out;
+  transition: background 0.22s ease-in-out;
   background: #f5f9fb;
-  opacity: .8;
+  opacity: 0.7;
   position: absolute;
   top: 0;
   bottom: 0;
 }
 
 .chart-slider__right {
-  transition: background .22s ease-in-out;
+  transition: background 0.22s ease-in-out;
   background: #f5f9fb;
-  opacity: .8;
+  opacity: 0.7;
   position: absolute;
   top: 0;
   bottom: 0;
@@ -109,7 +107,7 @@ canvas {
   position: absolute;
   top: 0;
   bottom: 0;
-  transition: background .22s ease-in-out;
+  transition: background 0.22s ease-in-out;
   background: #ddeaf3;
   width: 4px;
 }
@@ -118,19 +116,19 @@ canvas {
   position: absolute;
   top: 0;
   bottom: 0;
-  transition: background .22s ease-in-out;
+  transition: background 0.22s ease-in-out;
   background: #ddeaf3;
   width: 4px;
 }
 
 .chart-slider__arrow--left {
   right: 0;
-  cursor: w-resize;
+  cursor: col-resize;
 }
 
 .chart-slider__arrow--right {
   left: 0;
-  cursor: e-resize;
+  cursor: col-resize;
 }
 
 .chart-slider__window {
@@ -138,4 +136,5 @@ canvas {
   background: transparent;
   top: 0;
   bottom: 0;
+  cursor: move;
 }

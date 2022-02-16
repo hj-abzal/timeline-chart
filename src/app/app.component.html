@@ -1,3 +1,9 @@
 <div>
-  <app-chart></app-chart>
+
+  values:
+  <div>
+    {{date[0]}}
+    {{date[1]}}
+  </div>
+  <app-chart [data]="data" (timestamp)="onChage($event)"></app-chart>
 </div>

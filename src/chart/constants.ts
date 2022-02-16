@@ -7,3 +7,5 @@ export const VIEW_HEIGHT = DPI_HEIGHT - PADDING * 2;
 export const VIEW_WIDTH = DPI_WIDTH;
 export const ROWS_COUNT = 5;
 export const CIRCLE_RADIUS = 8;
+export const MIN_WIDTH = WIDTH * 0.05;
+export const defaultWidth = WIDTH * 0.3;

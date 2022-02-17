@@ -1,20 +1,21 @@
-import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {
+  defaultWidth,
   DPI_HEIGHT,
   DPI_WIDTH,
   HEIGHT,
+  MIN_WIDTH,
   PADDING,
   VIEW_HEIGHT,
   VIEW_WIDTH,
-  WIDTH,
-  MIN_WIDTH,
-  defaultWidth
+  WIDTH
 } from './constants';
-import { computeBoundaries, css, line, toCoords, toDate } from './utils';
+import {computeBoundaries, css, line, toCoords, toDate} from './utils';
 
 
+function noop(callback: any) {
+}
 
-function noop() { }
 @Component({
   selector: 'app-chart',
   templateUrl: './chart.component.html',
@@ -31,9 +32,7 @@ export class ChartComponent implements OnInit {
       sliderChart.init();
     }
   }
-  onChage(res: any) {
-    this.timestamp.emit(res);
-  }
+
 
   chart(root: any, data: any) {
     const canvas = root.querySelector('[data-el="main"]');
@@ -50,11 +49,11 @@ export class ChartComponent implements OnInit {
 
     const mousedown = (event: any) => {
       const type = event.target.dataset.type;
-      const dimentions = {
+      const dimensions = {
         left: parseInt($window.style.left),
         right: parseInt($window.style.right),
         width: parseInt($window.style.width)
-      }
+      };
       if (type === 'window') {
         const startX = event.pageX;
 
@@ -63,65 +62,70 @@ export class ChartComponent implements OnInit {
           const delta = startX - e.pageX;
 
           if (delta === 0) {
-            return
+            return;
           }
+          let left = dimensions.left - delta;
+          let right = WIDTH - left - dimensions.width;
 
-          let left = dimentions.left - delta;
-          let right = WIDTH - left - dimentions.width
-
-          setPosition(left, right)
+          setPosition(left, right);
 
           next();
-        }
+        };
 
       } else if (type === 'left' || type === 'right') {
         const startX = event.pageX;
+
         document.onmousemove = (e: any) => {
           const delta = startX - e.pageX;
 
           if (delta === 0) {
-            return
+            return;
           }
 
           if (type === 'left') {
-            const left = WIDTH - (dimentions.width + delta) - dimentions.right;
-            const right = WIDTH - (dimentions.width + delta) - left;
-            setPosition(left, right)
+            const left = WIDTH - (dimensions.width + delta) - dimensions.right;
+            const right = WIDTH - (dimensions.width + delta) - left;
+            setPosition(left, right);
           } else {
-            const right = WIDTH - (dimentions.width - delta) - dimentions.left;
-            setPosition(dimentions.left, right)
+            const right = WIDTH - (dimensions.width - delta) - dimensions.left;
+            setPosition(dimensions.left, right);
           }
           next();
-        }
+        };
       }
     };
+
     const mouseup = () => {
       document.onmousemove = null;
-    }
+    };
+    const mouseleave = () => {
+      document.onmousemove = null;
+    };
+
     root.addEventListener('mousedown', mousedown);
     root.addEventListener('mouseup', mouseup);
+    root.addEventListener('mouseleave', mouseleave);
 
-    //@ts-ignore
-    function next() { nextFn(getPosition()) }
+    function next() {
+      nextFn(getPosition());
+    }
 
 
     const setPosition = (left: number, right: number) => {
       const w = WIDTH - right - left;
-
       if (w < MIN_WIDTH) {
-        css($window, { width: MIN_WIDTH + 'px' });
-        css($left, { width: '0px' });
+        css($window, {width: MIN_WIDTH + 'px'});
         return;
       }
 
       if (right < 0) {
-        css($window, { right: '0px' });
-        css($right, { width: '0px' });
+        css($window, {right: '0px'});
+        css($right, {width: '0px'});
         return;
       }
       if (left < 0) {
-        css($window, { left: '0px' });
-        css($left, { width: '0px' });
+        css($window, {left: '0px'});
+        css($left, {width: '0px'});
         return;
       }
 
@@ -131,8 +135,8 @@ export class ChartComponent implements OnInit {
         left: left + 'px',
         right: right + 'px'
       });
-      css($right, { width: right + 'px' });
-      css($left, { width: left + 'px' });
+      css($right, {width: right + 'px'});
+      css($left, {width: left + 'px'});
 
     };
     setPosition(0, WIDTH - defaultWidth);
@@ -151,7 +155,7 @@ export class ChartComponent implements OnInit {
       const xData = data.columns.filter((col: any) => data.types[col[0]] === 'x')[0];
 
       this.xAxis(ctx, xData, xRatio);
-      this.yAxis(ctx)
+      this.yAxis(ctx);
       yData.map(toCoords(xRatio, yRatio, DPI_HEIGHT, PADDING)).forEach((coords: any, index: number) => {
         const color = data.colors[yData[index][0]];
         line(ctx, coords, color);
@@ -163,17 +167,17 @@ export class ChartComponent implements OnInit {
       const left = parseInt($left.style.width);
       const right = WIDTH - parseInt($right.style.width);
       const length = this.data.columns[0].length;
-      const leftIndex = Math.round((length * (left * 100 / WIDTH)) / 100) + 1
-      const rightIndex = Math.round((length * (right * 100 / WIDTH)) / 100) - 1
-      const res: any = []
+      const leftIndex = Math.round((length * (left * 100 / WIDTH)) / 100) + 1;
+      const rightIndex = Math.round((length * (right * 100 / WIDTH)) / 100) - 1;
+      const res: any = [];
       this.data.columns[0].forEach((col: any, index: number) => {
 
         if (index === leftIndex || index === rightIndex) {
-          res.push(toDate(col))
+          res.push(toDate(col));
         }
       });
-      this.onChage(res)
-    }
+      this.timestamp.emit(res);
+    };
 
 
     return {
@@ -184,8 +188,8 @@ export class ChartComponent implements OnInit {
         cancelAnimationFrame(raf);
         root.removeEventListener('mousedown', mousedown);
         root.removeEventListener('mouseup', mouseup);
-
-      },
+        root.removeEventListener('mouseleave', mouseleave);
+      }
     };
   }
 
@@ -229,9 +233,5 @@ export class ChartComponent implements OnInit {
     ctx.stroke();
     ctx.closePath();
   }
-
-
-
-
 
 }

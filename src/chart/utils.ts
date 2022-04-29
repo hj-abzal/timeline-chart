@@ -5,12 +5,6 @@ export const isOver = (mouse: any, x: number, length: number) => {
   return Math.abs(x - mouse.x) < width / 2;
 };
 
-export const toDate = (timestamp: Date) => {
-  const shortMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const date = new Date(timestamp);
-  return `${shortMonths[date.getMonth()]} ${date.getDate()}`;
-};
-
 
 export const computeBoundaries = (data: any) => {
   let min = 0;
@@ -48,7 +42,7 @@ export const css = (el: any, styles = {}) => {
 
 export const line = (ctx: any, coords: any, color: string) => {
   ctx.beginPath();
-  ctx.lineWidth = 4;
+  ctx.lineWidth = 2.5;
   ctx.strokeStyle = color;
   for (const [x, y] of coords) {
     ctx.lineTo(x, y);

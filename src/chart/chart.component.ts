@@ -5,12 +5,12 @@ import {
   DPI_WIDTH,
   HEIGHT,
   MIN_WIDTH,
-  PADDING,
+  PADDING, ROWS_COUNT,
   VIEW_HEIGHT,
   VIEW_WIDTH,
   WIDTH
 } from './constants';
-import {computeBoundaries, css, line, toCoords, toDate} from './utils';
+import {computeBoundaries, css, line, toCoords} from './utils';
 
 
 function noop(callback: any) {
@@ -150,12 +150,12 @@ export class ChartComponent implements OnInit {
       clear();
       const [yMin, yMax] = computeBoundaries(data);
       const yRatio = VIEW_HEIGHT / (yMax - yMin);
-      const xRatio = VIEW_WIDTH / (data.columns[0].length - 2);
+      const xRatio = VIEW_WIDTH / 23;
+      // const xRatio = VIEW_WIDTH / (data.columns[0].length - 2);
       const yData = data.columns.filter((col: any) => data.types[col[0]] === 'line');
       const xData = data.columns.filter((col: any) => data.types[col[0]] === 'x')[0];
-
       this.xAxis(ctx, xData, xRatio);
-      this.yAxis(ctx);
+      this.yAxis(ctx, yMin, yMax);
       yData.map(toCoords(xRatio, yRatio, DPI_HEIGHT, PADDING)).forEach((coords: any, index: number) => {
         const color = data.colors[yData[index][0]];
         line(ctx, coords, color);
@@ -173,7 +173,7 @@ export class ChartComponent implements OnInit {
       this.data.columns[0].forEach((col: any, index: number) => {
 
         if (index === leftIndex || index === rightIndex) {
-          res.push(toDate(col));
+          res.push(col);
         }
       });
       this.timestamp.emit(res);
@@ -194,37 +194,46 @@ export class ChartComponent implements OnInit {
   }
 
 
-  yAxis(ctx: any) {
+  yAxis(ctx: any, min: number, max: number) {
     ctx.beginPath();
     ctx.strokeStyle = '#bbb';
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 0.3;
     ctx.fillStyle = '#96a2aa';
-
-    ctx.moveTo(0, DPI_HEIGHT - PADDING);
+    const textStep = (max - min) / ROWS_COUNT
+    const step = VIEW_HEIGHT / ROWS_COUNT;
+    for (let i = 0; i <= ROWS_COUNT; i++) {
+      const y = step * i
+      const text = Math.floor(max - textStep * i)
+      ctx.fillText(text.toString(), 0, y + PADDING - 5); //y + PADDING - 10
+      ctx.moveTo(0, y + PADDING);
+      ctx.lineTo(DPI_WIDTH, y + PADDING);
+    }
+    ctx.lineWidth = 0.7;
     ctx.lineTo(DPI_WIDTH, DPI_HEIGHT - PADDING);
-
     ctx.stroke();
     ctx.closePath();
   }
 
   xAxis(ctx: any, xData: any, xRatio: number) {
-    const colsCount = 6;
-    const step = Math.round(xData.length / colsCount);
+    const totalElCount = 23 // первый объект это назавание сущности
+    // const totalElCount = xData.length - 2 // первый объект это назавание сущности
+    const colsCount = 5;
+    const step = Math.round(totalElCount / colsCount);
     ctx.beginPath();
     ctx.strokeStyle = '#bbb';
     ctx.lineWidth = 1;
     ctx.font = 'normal 20px Helvetica, sans-serif ';
-    ctx.fillStyle = '#96a2aa';
-    for (let i = 1; i < xData.length; i++) {
-      const text = toDate(xData[i]);
+    for (let i = 0; i < totalElCount; i++) {
       const x = i * xRatio;
-      ctx.fillText(text.toString(), x, DPI_WIDTH - 10);
+      ctx.arc(x, DPI_HEIGHT - PADDING, 2, 0, Math.PI * 2);
+      ctx.fill()
+      ctx.fillStyle = '#96a2aa'
+
     }
-    for (let i = 1; i < xData.length; i++) {
+    for (let i = 0; i < 23; i++) {
       const x = i * xRatio;
       if ((i - 1) % step === 0) {
-        const text = toDate(xData[i]);
-        ctx.fillText(text.toString(), x, DPI_HEIGHT - 10);
+        ctx.fillText(i, x, DPI_HEIGHT - 10);
       }
       ctx.stroke();
 
